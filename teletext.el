@@ -165,7 +165,7 @@ name of the network."
   (interactive
    (list (let ((networks (teletext--network-list)))
            (completing-read "Teletext network: " networks
-                            nil t nil nil (first networks)))))
+                            nil t nil nil (car networks)))))
   (cl-dolist (provider teletext-providers
                        (error "No such teletext network: %S" network))
     (let* ((provider-symbol (car provider))
@@ -176,7 +176,7 @@ name of the network."
         (teletext--set-state 'network network)
         (message "Switched to teletext network %s" network)
         (teletext-goto-page 100)
-        (return network)))))
+        (cl-return network)))))
 
 (defun teletext-goto-page (page)
   "Change the teletext display to the given PAGE number (100..899)."
