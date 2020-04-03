@@ -218,6 +218,7 @@
     (define-key map (kbd "p") 'teletext-previous-page)
     (define-key map (kbd "s") 'teletext-select-network)
     (define-key map [backspace] 'teletext-input-backspace)
+    (define-key map [deletechar] 'teletext-input-backspace)
     (define-key map [down] 'teletext-previous-page)
     (define-key map [left] 'teletext-previous-subpage)
     (define-key map [right] 'teletext-next-subpage)
