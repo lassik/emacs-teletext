@@ -14,12 +14,12 @@
 ;; Browse teletext pages in Emacs.
 ;;
 ;; You need to install one or more teletext providers in addition to
-;; this package. Look for package names of the form `teletext-*'.
+;; this package.  Look for package names of the form `teletext-*'.
 ;;
 ;;; Code:
 
 ;; History: There was an earlier videotext package for Emacs, vtx.el
-;; written in 1998 by Lars Magne Ingebrigtsen. The present package
+;; written in 1998 by Lars Magne Ingebrigtsen.  The present package
 ;; shares no code or functionality with vtx.el but I have kept the
 ;; same key bindings.
 
@@ -28,6 +28,11 @@
 (defvar-local teletext-state nil)
 
 (defun teletext-get-face (background foreground)
+  "Helper for programmers who make new teletext providers.
+
+Returns a face for displaying the given combination of BACKGROUND
+and FOREGROUND colors.  They are strings like \"black\" and
+\"green\"."
   (let* ((name (concat "teletext--face-" background "-" foreground))
          (face (make-face (intern name))))
     (set-face-background face background)
@@ -35,12 +40,14 @@
     face))
 
 (defun teletext--clamp-page (page)
+  "Internal helper to ensure PAGE is between 100..899."
   (cond ((not (integerp page)) 100)
         ((< page 100) 100)
         ((> page 899) 899)
         (t page)))
 
 (defun teletext--clamp-subpage (subpage count)
+  "Internal helper to ensure SUBPAGE is between 1..COUNT."
   (let ((count (or count 1)))
     (cond ((not (integerp subpage)) 1)
           ((< subpage 1) count)
@@ -48,26 +55,31 @@
           (t subpage))))
 
 (defun teletext--get-state (key)
+  "Internal helper to get data KEY for the current buffer."
   (cdr (assoc key teletext-state)))
 
 (defun teletext--set-state (key value)
+  "Internal helper to set data KEY to VALUE for the current buffer."
   (let ((apair (or (assoc key teletext-state)
                    (car (push (list key) teletext-state)))))
     (setcdr apair value)
     value))
 
 (defun teletext--merge-state (new-state)
+  "Internal helper to set NEW-STATE data for the current buffer."
   (dolist (new-apair new-state teletext-state)
     (let ((apair (assoc (car new-apair) teletext-state)))
       (if apair (setcdr apair (cdr new-apair))
         (push new-apair teletext-state)))))
 
 (defun teletext--update (thunk)
+  "Internal helper to refresh a teletext page using function THUNK."
   (cl-assert (equal major-mode 'teletext-mode))
   (cl-assert (null (buffer-file-name)))
   (funcall thunk))
 
 (defun teletext--format-time (time)
+  "Internal helper to display TIME on the teletext screen."
   (let ((formatted (teletext--get-state 'network-time-format)))
     (when formatted
       (let* ((decoded (decode-time time))
@@ -86,6 +98,7 @@
                                           formatted)))))))
 
 (defun teletext--revert-header-line ()
+  "Internal helper for the status line at the top of the teletext screen."
   (let ((inhibit-read-only t))
     (goto-char (point-min))
     (delete-region (point-at-bol) (point-at-eol))
@@ -102,9 +115,11 @@
         (if (= input 0) "" (format "%s" input)))))))
 
 (defun teletext--revert-header-line-only ()
+  "Internal helper to refresh a teletext page."
   (teletext--update #'teletext--revert-header-line))
 
 (defun teletext--revert (&optional _arg _noconfirm)
+  "Internal helper to refresh a teletext page."
   (teletext--update
    (lambda ()
      (let ((inhibit-read-only t))
@@ -134,6 +149,7 @@
                       (insert (format "%s\n" network))))))))))))
 
 (defun teletext--network-list ()
+  "Internal helper to get a list of all provided teletext networks."
   (let ((all-networks '()))
     (dolist (provider teletext-providers all-networks)
       (let* ((provider-networks-fn (cdr (assoc 'networks provider)))
@@ -141,6 +157,11 @@
         (setq all-networks (nconc all-networks networks))))))
 
 (defun teletext-select-network (network)
+  "Change to a particular teletext network.
+
+When called interactively, asks for the network in the minibuffer
+with tab completion.  Otherwise, NETWORK is a string giving the
+name of the network."
   (interactive
    (list (let ((networks (teletext--network-list)))
            (completing-read "Teletext network: " networks
@@ -158,6 +179,7 @@
         (return network)))))
 
 (defun teletext-goto-page (page)
+  "Change the teletext display to the given PAGE number (100..899)."
   (teletext--set-state 'input nil)
   (let ((page (teletext--clamp-page page)))
     (teletext--set-state 'page page)
@@ -166,6 +188,7 @@
     page))
 
 (defun teletext-goto-subpage (subpage)
+  "Change the teletext display to the given SUBPAGE of the current page."
   (teletext--set-state 'input nil)
   (let* ((count (teletext--get-state 'subpages))
          (subpage (teletext--clamp-subpage subpage count)))
@@ -174,28 +197,37 @@
     subpage))
 
 (defun teletext-previous-page ()
+  "Change the teletext display to the previous PAGE."
   (interactive)
   (teletext-goto-page (1- (or (teletext--get-state 'page) 100))))
 
 (defun teletext-next-page ()
+  "Change the teletext display to the next PAGE."
   (interactive)
   (teletext-goto-page (1+ (or (teletext--get-state 'page) 100))))
 
 (defun teletext-previous-subpage ()
+  "Change the teletext display to the previous SUBPAGE of the current page."
   (interactive)
   (teletext-goto-subpage (1- (or (teletext--get-state 'subpage) 1))))
 
 (defun teletext-next-subpage ()
+  "Change the teletext display to the next SUBPAGE of the current page."
   (interactive)
   (teletext-goto-subpage (1+ (or (teletext--get-state 'subpage) 1))))
 
 (defun teletext--input-changed ()
+  "Internal helper to handle teletext page number input."
   (teletext--revert-header-line)
   (let ((input (teletext--get-state 'input)))
     (when (>= input 100)
       (teletext-goto-page input))))
 
 (defun teletext-input-digit (char)
+  "Add the given digit CHAR to the teletext page number input field.
+
+If this is the third digit, the page number input is completed
+and the display changes to that page."
   (interactive (list last-command-event))
   (cl-assert (and (characterp char) (<= ?0 char ?9)))
   (let ((digit (- char ?0))
@@ -204,6 +236,7 @@
     (teletext--input-changed)))
 
 (defun teletext-input-backspace ()
+  "Erase the last digit from the teletext page number input field."
   (interactive)
   (let ((input (teletext--get-state 'input)))
     (teletext--set-state 'input (truncate (or input 0) 10))
@@ -236,6 +269,7 @@
   (teletext--revert))
 
 (cl-defun teletext-provide (symbol &key networks page)
+  "Helper for programmers who make new teletext providers."
   (cl-assert (functionp networks))
   (cl-assert (functionp page))
   (let ((apair (or (assoc symbol teletext-providers)
@@ -245,6 +279,7 @@
 
 ;;;###autoload
 (defun teletext ()
+  "Browse teletext pages in Emacs."
   (interactive)
   (switch-to-buffer (get-buffer-create "*Teletext*"))
   (unless (equal major-mode 'teletext-mode)
