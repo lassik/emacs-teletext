@@ -40,6 +40,13 @@
         ((> page 899) 899)
         (t page)))
 
+(defun teletext--clamp-subpage (subpage count)
+  (let ((count (or count 1)))
+    (cond ((not (integerp subpage)) 1)
+          ((< subpage 1) count)
+          ((> subpage count) 1)
+          (t subpage))))
+
 (defun teletext--get-state (key)
   (cdr (assoc key teletext-state)))
 
@@ -159,6 +166,15 @@
       (teletext--revert))
     page))
 
+(defun teletext-goto-subpage (subpage)
+  (teletext--set-state 'input nil)
+  (let* ((count (teletext--get-state 'subpages))
+         (subpage (teletext--clamp-subpage subpage count)))
+    (unless (equal (teletext--get-state 'subpage) subpage)
+      (teletext--set-state 'subpage subpage)
+      (teletext--revert))
+    subpage))
+
 (defun teletext-previous-page ()
   (interactive)
   (teletext-goto-page (1- (or (teletext--get-state 'page) 100))))
@@ -168,10 +184,12 @@
   (teletext-goto-page (1+ (or (teletext--get-state 'page) 100))))
 
 (defun teletext-previous-subpage ()
-  (interactive))
+  (interactive)
+  (teletext-goto-subpage (1- (or (teletext--get-state 'subpage) 1))))
 
 (defun teletext-next-subpage ()
-  (interactive))
+  (interactive)
+  (teletext-goto-subpage (1+ (or (teletext--get-state 'subpage) 1))))
 
 (defun teletext--input-changed ()
   (teletext--revert-header-line)
