@@ -138,7 +138,7 @@ and FOREGROUND colors.  They are strings like \"black\" and
                    (funcall provider-page-fn network page subpage))
                   (teletext--revert-header-line)))
                ((null teletext-providers)
-                (insert "\nNo networks. Install a provider."))
+                (insert "\nNo networks. Install a teletext provider."))
                (t
                 (insert "\nNetworks:\n\n")
                 (dolist (provider teletext-providers)
