@@ -27,6 +27,13 @@
 
 (defvar-local teletext-state nil)
 
+(defun teletext-get-face (background foreground)
+  (let* ((name (concat "teletext--face-" background "-" foreground))
+         (face (make-face (intern name))))
+    (set-face-background face background)
+    (set-face-foreground face foreground)
+    face))
+
 (defun teletext--clamp-page (page)
   (cond ((not (integerp page)) 100)
         ((< page 100) 100)
