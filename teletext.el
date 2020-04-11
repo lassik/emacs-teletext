@@ -23,9 +23,17 @@
 ;; shares no code or functionality with vtx.el but I have kept the
 ;; same key bindings.
 
-(defvar teletext-providers '())
+(defvar teletext-providers '()
+  "List of Emacs packages providing teletext service.
 
-(defvar-local teletext--state nil)
+The package `teletext' does not actually provide a teletext
+broadcast.  Broadcasts are provided by third-party packages.
+
+Each such package calls `teletext-provide' internally to register
+itself with the `teletext' package.")
+
+(defvar-local teletext--state nil
+  "Internal variable remembering where you're at in a teletext buffer.")
 
 (defun teletext-get-face (background foreground)
   "Helper for programmers who make new teletext providers.
