@@ -120,6 +120,7 @@ COUNT is negative or zero, nothing is inserted."
              (day (nth 3 decoded))
              (hour (nth 2 decoded))
              (minute (nth 1 decoded))
+             (case-fold-search nil)
              (substitutions `(("{dd}" . ,(format "%02d" day))
                               ("{mm}" . ,(format "%02d" month))
                               ("{HH}" . ,(format "%02d" hour))
