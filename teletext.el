@@ -25,7 +25,7 @@
 
 (defvar teletext-providers '())
 
-(defvar-local teletext-state nil)
+(defvar-local teletext--state nil)
 
 (defun teletext-get-face (background foreground)
   "Helper for programmers who make new teletext providers.
@@ -56,21 +56,21 @@ and FOREGROUND colors.  They are strings like \"black\" and
 
 (defun teletext--get-state (key)
   "Internal helper to get data KEY for the current buffer."
-  (cdr (assoc key teletext-state)))
+  (cdr (assoc key teletext--state)))
 
 (defun teletext--set-state (key value)
   "Internal helper to set data KEY to VALUE for the current buffer."
-  (let ((apair (or (assoc key teletext-state)
-                   (car (push (list key) teletext-state)))))
+  (let ((apair (or (assoc key teletext--state)
+                   (car (push (list key) teletext--state)))))
     (setcdr apair value)
     value))
 
 (defun teletext--merge-state (new-state)
   "Internal helper to set NEW-STATE data for the current buffer."
-  (dolist (new-apair new-state teletext-state)
-    (let ((apair (assoc (car new-apair) teletext-state)))
+  (dolist (new-apair new-state teletext--state)
+    (let ((apair (assoc (car new-apair) teletext--state)))
       (if apair (setcdr apair (cdr new-apair))
-        (push new-apair teletext-state)))))
+        (push new-apair teletext--state)))))
 
 (defun teletext--update (thunk)
   "Internal helper to refresh a teletext page using function THUNK."
