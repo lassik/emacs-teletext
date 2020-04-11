@@ -136,17 +136,26 @@ COUNT is negative or zero, nothing is inserted."
   (let ((inhibit-read-only t))
     (goto-char (point-min))
     (delete-region (point-at-bol) (point-at-eol))
-    (insert
-     (format
-      "  %3d  %d/%d    %s   %s   %s %s"
-      (teletext--get-state 'page)
-      (teletext--get-state 'subpage)
-      (teletext--get-state 'subpages)
-      (teletext--get-state 'network-heading)
-      (teletext--format-time (current-time))
-      (or (teletext--get-state 'network-page-text) "Page:")
-      (let ((input (or (teletext--get-state 'input) 0)))
-        (if (= input 0) "" (format "%s" input)))))))
+    (let* ((input (or (teletext--get-state 'input) 0))
+           (blank-input-p (= input 0))
+           (left-justified-part
+            (format "  %3d %2d/%-2d %s"
+                    (teletext--get-state 'page)
+                    (teletext--get-state 'subpage)
+                    (teletext--get-state 'subpages)
+                    (teletext--get-state 'network-heading)))
+           (right-justified-part
+            (if blank-input-p
+                (teletext--format-time (current-time))
+                (or (teletext--get-state 'network-page-text) "Page:")))
+           (tail (if blank-input-p "" (format " %d" input)))
+           (tail-max-length (if blank-input-p 0 4))
+           (gap-length (max 1 (- 40 tail-max-length
+                                 (length left-justified-part)
+                                 (length right-justified-part))))
+           (gap (make-string gap-length ? ))
+           (line (concat left-justified-part gap right-justified-part tail)))
+      (insert line))))
 
 (defun teletext--revert-header-line-only ()
   "Internal helper to refresh a teletext page."
