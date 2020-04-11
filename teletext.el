@@ -35,7 +35,7 @@ itself with the `teletext' package.")
 (defvar-local teletext--state nil
   "Internal variable remembering where you're at in a teletext buffer.")
 
-(defun teletext-get-face (background foreground)
+(defun teletext--get-face (background foreground)
   "Helper for programmers who make new teletext providers.
 
 Returns a face for displaying the given combination of BACKGROUND
@@ -57,7 +57,7 @@ is nil, BACKGROUND is used for the foreground color as well.
 A color is one of the lowercase strings \"black\", \"red\",
 \"green\", \"yellow\", \"blue\", \"magenta\", \"cyan\", \"white\"."
   (let ((overlay (make-overlay start end))
-        (face (teletext-get-face background (or foreground background))))
+        (face (teletext--get-face background (or foreground background))))
     (overlay-put overlay 'face face)
     overlay))
 
