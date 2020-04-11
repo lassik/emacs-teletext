@@ -47,6 +47,31 @@ and FOREGROUND colors.  They are strings like \"black\" and
     (set-face-foreground face foreground)
     face))
 
+(defun teletext-put-color (background foreground start end)
+  "Helper for programmers who make new teletext providers.
+
+Colors the region of text from START to END in the current buffer
+using the given BACKGROUND and FOREGROUND color.  If FOREGROUND
+is nil, BACKGROUND is used for the foreground color as well.
+
+A color is one of the lowercase strings \"black\", \"red\",
+\"green\", \"yellow\", \"blue\", \"magenta\", \"cyan\", \"white\"."
+  (let ((overlay (make-overlay start end))
+        (face (teletext-get-face background (or foreground background))))
+    (overlay-put overlay 'face face)
+    overlay))
+
+(defun teletext-insert-spaces (background count)
+  "Helper for programmers who make new teletext providers.
+
+Insert COUNT invisible space characters at point and move point
+to the end of the spaces. The given BACKGROUND color is used.  If
+COUNT is negative or zero, nothing is inserted."
+  (when (> count 0)
+    (let ((start (point)))
+      (insert (make-string count ? ))
+      (teletext-put-color background nil start (point)))))
+
 (defun teletext--clamp-page (page)
   "Internal helper to ensure PAGE is between 100..899."
   (cond ((not (integerp page)) 100)
