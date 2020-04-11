@@ -199,12 +199,14 @@ name of the network."
 (defun teletext-previous-page ()
   "Change the teletext display to the previous PAGE."
   (interactive)
-  (teletext-goto-page (1- (or (teletext--get-state 'page) 100))))
+  (teletext-goto-page (or (teletext--get-state 'prev-page)
+                          (1- (or (teletext--get-state 'page) 100)))))
 
 (defun teletext-next-page ()
   "Change the teletext display to the next PAGE."
   (interactive)
-  (teletext-goto-page (1+ (or (teletext--get-state 'page) 100))))
+  (teletext-goto-page (or (teletext--get-state 'next-page)
+                          (1+ (or (teletext--get-state 'page) 100)))))
 
 (defun teletext-previous-subpage ()
   "Change the teletext display to the previous SUBPAGE of the current page."
