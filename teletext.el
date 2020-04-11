@@ -23,7 +23,7 @@
 ;; shares no code or functionality with vtx.el but I have kept the
 ;; same key bindings.
 
-(defvar teletext-providers '()
+(defvar teletext--providers '()
   "List of Emacs packages providing teletext service.
 
 The package `teletext' does not actually provide a teletext
@@ -173,18 +173,18 @@ COUNT is negative or zero, nothing is inserted."
        (let ((provider-symbol (teletext--get-state 'provider))
              (network (teletext--get-state 'network)))
          (cond ((and provider-symbol network)
-                (let* ((provider (assoc provider-symbol teletext-providers))
+                (let* ((provider (assoc provider-symbol teletext--providers))
                        (provider-page-fn (cdr (assoc 'page provider)))
                        (page (teletext--get-state 'page))
                        (subpage (teletext--get-state 'subpage)))
                   (teletext--merge-state
                    (funcall provider-page-fn network page subpage))
                   (teletext--revert-header-line)))
-               ((null teletext-providers)
+               ((null teletext--providers)
                 (insert "\nNo networks. Install a teletext provider."))
                (t
                 (insert "\nNetworks:\n\n")
-                (dolist (provider teletext-providers)
+                (dolist (provider teletext--providers)
                   (let* ((provider-networks-fn
                           (cdr (assoc 'networks provider)))
                          (networks (funcall provider-networks-fn)))
@@ -194,7 +194,7 @@ COUNT is negative or zero, nothing is inserted."
 (defun teletext--network-list ()
   "Internal helper to get a list of all provided teletext networks."
   (let ((all-networks '()))
-    (dolist (provider teletext-providers all-networks)
+    (dolist (provider teletext--providers all-networks)
       (let* ((provider-networks-fn (cdr (assoc 'networks provider)))
              (networks (funcall provider-networks-fn)))
         (setq all-networks (nconc all-networks networks))))))
@@ -209,7 +209,7 @@ name of the network."
    (list (let ((networks (teletext--network-list)))
            (completing-read "Teletext network: " networks
                             nil t nil nil (car networks)))))
-  (cl-dolist (provider teletext-providers
+  (cl-dolist (provider teletext--providers
                        (error "No such teletext network: %S" network))
     (let* ((provider-symbol (car provider))
            (provider-networks-fn (cdr (assoc 'networks (cdr provider))))
@@ -317,8 +317,8 @@ and the display changes to that page."
   "Helper for programmers who make new teletext providers."
   (cl-assert (functionp networks))
   (cl-assert (functionp page))
-  (let ((apair (or (assoc symbol teletext-providers)
-                   (car (push (list symbol) teletext-providers)))))
+  (let ((apair (or (assoc symbol teletext--providers)
+                   (car (push (list symbol) teletext--providers)))))
     (setcdr apair (list (cons 'networks networks) (cons 'page page)))
     symbol))
 
