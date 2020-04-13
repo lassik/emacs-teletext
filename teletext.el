@@ -161,7 +161,7 @@ COUNT is negative or zero, nothing is inserted."
   "Internal helper to refresh a teletext page."
   (teletext--update #'teletext--revert-header-line))
 
-(defun teletext--revert (&optional _arg _noconfirm)
+(defun teletext--revert (&optional _ignore-auto _noconfirm)
   "Internal helper to refresh a teletext page."
   (teletext--update
    (lambda ()
