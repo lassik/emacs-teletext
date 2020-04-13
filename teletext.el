@@ -105,7 +105,7 @@ COUNT is negative or zero, nothing is inserted."
       (if apair (setcdr apair (cdr new-apair))
         (push new-apair teletext--state)))))
 
-(defun teletext--update (thunk)
+(defun teletext--update-fun (thunk)
   "Internal helper to refresh a teletext page using function THUNK."
   (cl-assert (equal major-mode 'teletext-mode))
   (cl-assert (null (buffer-file-name)))
@@ -159,11 +159,11 @@ COUNT is negative or zero, nothing is inserted."
 
 (defun teletext--update-header-line-only ()
   "Internal helper to refresh a teletext page."
-  (teletext--update #'teletext--update-header-line))
+  (teletext--update-fun #'teletext--update-header-line))
 
 (defun teletext--revert (&optional _ignore-auto _noconfirm)
   "Internal helper to refresh a teletext page."
-  (teletext--update
+  (teletext--update-fun
    (lambda ()
      (let ((inhibit-read-only t))
        (teletext--set-state
