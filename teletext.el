@@ -131,7 +131,7 @@ COUNT is negative or zero, nothing is inserted."
                                           (cdr subst)
                                           formatted)))))))
 
-(defun teletext--revert-header-line ()
+(defun teletext--update-header-line ()
   "Internal helper for the status line at the top of the teletext screen."
   (let ((inhibit-read-only t))
     (goto-char (point-min))
@@ -157,9 +157,9 @@ COUNT is negative or zero, nothing is inserted."
            (line (concat left-justified-part gap right-justified-part tail)))
       (insert line))))
 
-(defun teletext--revert-header-line-only ()
+(defun teletext--update-header-line-only ()
   "Internal helper to refresh a teletext page."
-  (teletext--update #'teletext--revert-header-line))
+  (teletext--update #'teletext--update-header-line))
 
 (defun teletext--revert (&optional _ignore-auto _noconfirm)
   "Internal helper to refresh a teletext page."
@@ -179,7 +179,7 @@ COUNT is negative or zero, nothing is inserted."
                        (subpage (teletext--get-state 'subpage)))
                   (teletext--merge-state
                    (funcall provider-page-fn network page subpage))
-                  (teletext--revert-header-line)))
+                  (teletext--update-header-line)))
                ((null teletext--providers)
                 (insert "\nNo networks. Install a teletext provider."))
                (t
@@ -263,7 +263,7 @@ name of the network."
 
 (defun teletext--input-changed ()
   "Internal helper to handle teletext page number input."
-  (teletext--revert-header-line)
+  (teletext--update-header-line)
   (let ((input (teletext--get-state 'input)))
     (when (>= input 100)
       (teletext-goto-page input))))
