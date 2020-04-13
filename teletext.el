@@ -161,7 +161,7 @@ COUNT is negative or zero, nothing is inserted."
   "Internal helper to refresh a teletext page."
   (teletext--update-fun #'teletext--update-header-line))
 
-(defun teletext--revert (&optional _ignore-auto _noconfirm)
+(defun teletext--update (&optional force)
   "Internal helper to refresh a teletext page."
   (teletext--update-fun
    (lambda ()
@@ -178,7 +178,7 @@ COUNT is negative or zero, nothing is inserted."
                        (page (teletext--get-state 'page))
                        (subpage (teletext--get-state 'subpage)))
                   (teletext--merge-state
-                   (funcall provider-page-fn network page subpage))
+                   (funcall provider-page-fn network page subpage force))
                   (teletext--update-header-line)))
                ((null teletext--providers)
                 (insert "\nNo networks. Install a teletext provider."))
@@ -190,6 +190,10 @@ COUNT is negative or zero, nothing is inserted."
                          (networks (funcall provider-networks-fn)))
                     (dolist (network networks)
                       (insert (format "%s\n" network))))))))))))
+
+(defun teletext--revert (&optional _ignore-auto _noconfirm)
+  "Internal helper to refresh a teletext page."
+  (teletext--update t))
 
 (defun teletext--network-list ()
   "Internal helper to get a list of all provided teletext networks."
@@ -227,7 +231,7 @@ name of the network."
   (let ((page (teletext--clamp-page page)))
     (teletext--set-state 'page page)
     (teletext--set-state 'subpage 1)
-    (teletext--revert)
+    (teletext--update)
     page))
 
 (defun teletext-goto-subpage (subpage)
@@ -236,7 +240,7 @@ name of the network."
   (let* ((count (teletext--get-state 'subpages))
          (subpage (teletext--clamp-subpage subpage count)))
     (teletext--set-state 'subpage subpage)
-    (teletext--revert)
+    (teletext--update)
     subpage))
 
 (defun teletext-previous-page ()
@@ -311,7 +315,7 @@ and the display changes to that page."
 
 \\{teletext-mode-map}"
   (setq-local revert-buffer-function 'teletext--revert)
-  (teletext--revert))
+  (teletext--update))
 
 (cl-defun teletext-provide (symbol &key networks page)
   "Helper for programmers who make new teletext providers."
