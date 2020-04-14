@@ -162,7 +162,11 @@ COUNT is negative or zero, nothing is inserted."
   (teletext--update-fun #'teletext--update-header-line))
 
 (defun teletext--update (&optional force)
-  "Internal helper to refresh a teletext page."
+  "Internal helper to refresh a teletext page.
+
+If FORCE is non-nil, the teletext provider is told to ignore any
+cached version of the page and download a fresh copy, ensuring
+the page is up to date."
   (teletext--update-fun
    (lambda ()
      (let ((inhibit-read-only t))
