@@ -297,10 +297,27 @@ When called from Lisp, CHAR is a character between ?0 and ?9."
     (teletext--set-state 'input (truncate (or input 0) 10))
     (teletext--input-changed)))
 
+(defun teletext-duplicate-buffer ()
+  "Make a copy of the current teletext buffer.
+
+The new buffer is shown in another window and becomes the current
+buffer.
+
+This command can be used to keep the old teletext buffer as a
+kind of bookmark that is easy to return to later.  An unlimited
+number of teletext buffers can be open at once."
+  (interactive)
+  (let ((state (cl-copy-list teletext--state)))
+    (switch-to-buffer-other-window (generate-new-buffer-name "*Teletext*"))
+    (teletext-mode)
+    (setq-local teletext--state state)
+    (teletext--update)))
+
 (defvar teletext-mode-map
   (let ((map (make-sparse-keymap)))
     (set-keymap-parent map special-mode-map)
     (define-key map (kbd "b") 'teletext-previous-subpage)
+    (define-key map (kbd "d") 'teletext-duplicate-buffer)
     (define-key map (kbd "f") 'teletext-next-subpage)
     (define-key map (kbd "n") 'teletext-next-page)
     (define-key map (kbd "p") 'teletext-previous-page)
