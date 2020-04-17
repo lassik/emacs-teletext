@@ -298,10 +298,9 @@ When called from Lisp, CHAR is a character between ?0 and ?9."
     (teletext--input-changed)))
 
 (defun teletext-duplicate-buffer ()
-  "Make a copy of the current teletext buffer.
+  "Make a copy of the current teletext buffer and activate it.
 
-The new buffer is shown in another window and becomes the current
-buffer.
+The new buffer is shown in another window.
 
 This command can be used to keep the old teletext buffer as a
 kind of bookmark that is easy to return to later.  An unlimited
