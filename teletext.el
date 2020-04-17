@@ -338,6 +338,9 @@ Depending on the teletext provider, block graphics (\"mosaic\")
 may not be displayed.  Double-width and double-height text may be
 displayed at a reduced size.
 
+Pages may be cached for faster browsing.  Press \\[revert-buffer] to refresh
+the current page with the latest version.
+
 \\{teletext-mode-map}"
   (setq-local revert-buffer-function 'teletext--revert)
   (teletext--update))
