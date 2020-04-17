@@ -35,6 +35,12 @@ itself with the `teletext' package.")
 (defvar-local teletext--state nil
   "Internal variable remembering where you're at in a teletext buffer.")
 
+(defun teletext--deep-copy-list (list)
+  "Internal helper to copy LIST and all its sublists."
+  (if (atom list) list
+    (cons (teletext--deep-copy-list (car list))
+          (teletext--deep-copy-list (cdr list)))))
+
 (defun teletext--get-face (background foreground)
   "Helper for programmers who make new teletext providers.
 
@@ -306,10 +312,10 @@ This command can be used to keep the old teletext buffer as a
 kind of bookmark that is easy to return to later.  An unlimited
 number of teletext buffers can be open at once."
   (interactive)
-  (let ((state (cl-copy-list teletext--state)))
+  (let ((old-state teletext--state))
     (switch-to-buffer-other-window (generate-new-buffer-name "*Teletext*"))
     (teletext-mode)
-    (setq-local teletext--state state)
+    (setq-local teletext--state (teletext--deep-copy-list old-state))
     (teletext--update)))
 
 (defvar teletext-mode-map
