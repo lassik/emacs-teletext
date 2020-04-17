@@ -324,6 +324,7 @@ number of teletext buffers can be open at once."
     (define-key map (kbd "b") 'teletext-previous-subpage)
     (define-key map (kbd "d") 'teletext-duplicate-buffer)
     (define-key map (kbd "f") 'teletext-next-subpage)
+    (define-key map (kbd "k") 'kill-current-buffer)
     (define-key map (kbd "n") 'teletext-next-page)
     (define-key map (kbd "p") 'teletext-previous-page)
     (define-key map (kbd "s") 'teletext-select-network)
