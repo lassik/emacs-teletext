@@ -45,10 +45,19 @@ itself with the `teletext' package.")
   "Internal helper to get a face for the given color combination.
 
 BACKGROUND and FOREGROUND are strings like \"black\" and \"green\"."
-  (let* ((name (concat "teletext--face-" foreground "-on-" background))
-         (face (make-face (intern name))))
-    (set-face-background face background)
-    (set-face-foreground face foreground)
+  (let* ((same (equal background foreground))
+         (face (intern (if same (concat "teletext--face-" background)
+                         (concat "teletext--face-"
+                                 foreground "-on-" background)))))
+    (unless (facep face)
+      (make-face face)
+      (set-face-background face background)
+      (set-face-foreground face foreground)
+      (set-face-documentation
+       face
+       (if same (format "Face for %s areas on a teletext page." background)
+         (format "Face for %s text on a %s background on a teletext page."
+                 foreground background))))
     face))
 
 (defun teletext-put-color (background foreground start end)
