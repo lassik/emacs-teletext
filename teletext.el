@@ -317,6 +317,25 @@ and the display changes to that page."
 (define-derived-mode teletext-mode special-mode "Teletext"
   "Major mode for browsing Teletext pages.
 
+Start by pressing \\[teletext-select-network] to select a television network.
+
+Use the arrow keys to browse pages on the network.  Up and down
+navigate consecutive page numbers (skipping blank pages).  Left
+and right browse subpages of the same page.
+
+Type digits 0..9 to input a page number directly.  Teletext pages
+are numbered 100..899.  The page will switch as soon as you have
+typed the third digit.  This usage imitates European TV sets.
+
+The current page and subpage numbers are shown at the top of the
+display.  For example, 2/5 means the second subpage of five
+subpages in total.  Most teletext pages do not have additional
+subpages, in which case 1/1 is shown.
+
+Depending on the teletext provider, block graphics (\"mosaic\")
+may not be displayed.  Double-width and double-height text may be
+displayed at a reduced size.
+
 \\{teletext-mode-map}"
   (setq-local revert-buffer-function 'teletext--revert)
   (teletext--update))
