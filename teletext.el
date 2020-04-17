@@ -42,12 +42,10 @@ itself with the `teletext' package.")
           (teletext--deep-copy-list (cdr list)))))
 
 (defun teletext--get-face (background foreground)
-  "Helper for programmers who make new teletext providers.
+  "Internal helper to get a face for the given color combination.
 
-Returns a face for displaying the given combination of BACKGROUND
-and FOREGROUND colors.  They are strings like \"black\" and
-\"green\"."
-  (let* ((name (concat "teletext--face-" background "-" foreground))
+BACKGROUND and FOREGROUND are strings like \"black\" and \"green\"."
+  (let* ((name (concat "teletext--face-" foreground "-on-" background))
          (face (make-face (intern name))))
     (set-face-background face background)
     (set-face-foreground face foreground)
