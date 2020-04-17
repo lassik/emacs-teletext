@@ -248,24 +248,24 @@ name of the network."
     subpage))
 
 (defun teletext-previous-page ()
-  "Change the teletext display to the previous PAGE."
+  "Change the teletext display to the previous page."
   (interactive)
   (teletext-goto-page (or (teletext--get-state 'prev-page)
                           (1- (or (teletext--get-state 'page) 100)))))
 
 (defun teletext-next-page ()
-  "Change the teletext display to the next PAGE."
+  "Change the teletext display to the next page."
   (interactive)
   (teletext-goto-page (or (teletext--get-state 'next-page)
                           (1+ (or (teletext--get-state 'page) 100)))))
 
 (defun teletext-previous-subpage ()
-  "Change the teletext display to the previous SUBPAGE of the current page."
+  "Change the teletext display to the previous subpage of the current page."
   (interactive)
   (teletext-goto-subpage (1- (or (teletext--get-state 'subpage) 1))))
 
 (defun teletext-next-subpage ()
-  "Change the teletext display to the next SUBPAGE of the current page."
+  "Change the teletext display to the next subpage of the current page."
   (interactive)
   (teletext-goto-subpage (1+ (or (teletext--get-state 'subpage) 1))))
 
@@ -277,10 +277,12 @@ name of the network."
       (teletext-goto-page input))))
 
 (defun teletext-input-digit (char)
-  "Add the given digit CHAR to the teletext page number input field.
+  "Add a digit to the teletext page number input field.
 
-If this is the third digit, the page number input is completed
-and the display changes to that page."
+If this is the third digit, the input is completed and the
+display changes to that page.
+
+When called from Lisp, CHAR is a character between ?0 and ?9."
   (interactive (list last-command-event))
   (cl-assert (and (characterp char) (<= ?0 char ?9)))
   (let ((digit (- char ?0))
