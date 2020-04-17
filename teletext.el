@@ -331,10 +331,24 @@ and the display changes to that page."
     symbol))
 
 ;;;###autoload
-(defun teletext ()
-  "Browse teletext pages in Emacs."
-  (interactive)
-  (switch-to-buffer (get-buffer-create "*Teletext*"))
+(defun teletext (&optional buffer)
+  "Browse teletext pages in Emacs.
+
+Switch to BUFFER (creating it if it does not exist) and ensure it
+is in `teletext-mode'.  BUFFER can be a buffer object.  More
+commonly, it is a string giving the name of a new or existing
+buffer.  The default is `*Teletext*'.  Interactively, a prefix
+argument prompts for the buffer name.
+
+There can be any number of teletext buffers at once, and they can
+be viewing different pages on different networks.  More than one
+buffer can be set to the same network."
+  (interactive
+   (list (and current-prefix-arg
+              (read-buffer "Teletext buffer: "
+                           (generate-new-buffer-name "*Teletext*")))))
+  (setq buffer (get-buffer-create (or buffer "*Teletext*")))
+  (switch-to-buffer buffer)
   (unless (equal major-mode 'teletext-mode)
     (teletext-mode)))
 
