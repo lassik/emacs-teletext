@@ -44,18 +44,20 @@ itself with the `teletext' package.")
 (defun teletext--get-face (background foreground)
   "Internal helper to get a face for the given color combination.
 
-BACKGROUND and FOREGROUND are strings like \"black\" and \"green\"."
-  (let* ((same (equal background foreground))
-         (face (intern (if same (concat "teletext--face-" background)
-                         (concat "teletext--face-"
-                                 foreground "-on-" background)))))
+BACKGROUND and FOREGROUND are strings like \"black\" and
+\"green\".  If FOREGROUND is nil, BACKGROUND is used for the
+foreground color as well."
+  (let ((face (intern
+               (if (null foreground) (concat "teletext--face-" background)
+                 (concat "teletext--face-" foreground "-on-" background)))))
     (unless (facep face)
       (make-face face)
       (set-face-background face background)
       (set-face-foreground face foreground)
       (set-face-documentation
        face
-       (if same (format "Face for %s areas on a teletext page." background)
+       (if (null foreground)
+           (format "Face for %s areas on a teletext page." background)
          (format "Face for %s text on a %s background on a teletext page."
                  foreground background))))
     face))
@@ -70,7 +72,7 @@ is nil, BACKGROUND is used for the foreground color as well.
 A color is one of the lowercase strings \"black\", \"red\",
 \"green\", \"yellow\", \"blue\", \"magenta\", \"cyan\", \"white\"."
   (let ((overlay (make-overlay start end))
-        (face (teletext--get-face background (or foreground background))))
+        (face (teletext--get-face background foreground)))
     (overlay-put overlay 'face face)
     overlay))
 
