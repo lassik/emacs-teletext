@@ -343,6 +343,8 @@ number of teletext buffers can be open at once."
     (define-key map [left] 'teletext-previous-subpage)
     (define-key map [right] 'teletext-next-subpage)
     (define-key map [up] 'teletext-next-page)
+    (define-key map [wheel-down] 'teletext-previous-page)
+    (define-key map [wheel-up] 'teletext-next-page)
     (dotimes (i 10)
       (define-key map (kbd (format "%d" i)) 'teletext-input-digit))
     map)
