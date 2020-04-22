@@ -87,6 +87,20 @@ COUNT is negative or zero, nothing is inserted."
       (insert (make-string count ? ))
       (teletext-put-color background nil start (point)))))
 
+(defun teletext--linkify-buffer ()
+  "Internal helper to turn page numbers into clickable links."
+  (let ((inhibit-read-only t))
+    (goto-char (point-min))
+    (goto-char (point-at-eol))
+    (while (re-search-forward "\\(\\<[1-8][0-9][0-9]\\>\\)[ -]" nil t)
+      (let ((page (string-to-number (match-string 1))))
+        (add-text-properties
+         (match-beginning 1)
+         (match-end 1)
+         (list 'mouse-face 'highlight
+               'help-echo "mouse-1: go to teletext page"
+               'teletext--page page))))))
+
 (defun teletext--clamp-page (page)
   "Internal helper to ensure PAGE is between 100..899."
   (cond ((not (integerp page)) 100)
@@ -176,6 +190,25 @@ COUNT is negative or zero, nothing is inserted."
   "Internal helper to refresh a teletext page."
   (teletext--update-fun #'teletext--update-header-line))
 
+(defun teletext--insert-network-list ()
+  "Internal helper to insert the list of teletext networks."
+  (cond ((null teletext--providers)
+         (insert "\nNo networks. Install a teletext provider."))
+        (t
+         (insert "\nNetworks:\n\n")
+         (dolist (provider teletext--providers)
+           (let* ((provider-networks-fn (cdr (assoc 'networks provider)))
+                  (networks (funcall provider-networks-fn)))
+             (dolist (network networks)
+               (let ((start (point)))
+                 (insert (format "%s\n" network))
+                 (let ((end (point)))
+                   (add-text-properties
+                    start end
+                    (list 'mouse-face 'highlight
+                          'help-echo "mouse-1: select teletext network"
+                          'teletext--network network))))))))))
+
 (defun teletext--update (&optional force)
   "Internal helper to refresh a teletext page.
 
@@ -191,24 +224,16 @@ the page is up to date."
        (insert "\n")
        (let ((provider-symbol (teletext--get-state 'provider))
              (network (teletext--get-state 'network)))
-         (cond ((and provider-symbol network)
-                (let* ((provider (assoc provider-symbol teletext--providers))
-                       (provider-page-fn (cdr (assoc 'page provider)))
-                       (page (teletext--get-state 'page))
-                       (subpage (teletext--get-state 'subpage)))
-                  (teletext--merge-state
-                   (funcall provider-page-fn network page subpage force))
-                  (teletext--update-header-line)))
-               ((null teletext--providers)
-                (insert "\nNo networks. Install a teletext provider."))
-               (t
-                (insert "\nNetworks:\n\n")
-                (dolist (provider teletext--providers)
-                  (let* ((provider-networks-fn
-                          (cdr (assoc 'networks provider)))
-                         (networks (funcall provider-networks-fn)))
-                    (dolist (network networks)
-                      (insert (format "%s\n" network))))))))))))
+         (if (not (and provider-symbol network))
+             (teletext--insert-network-list)
+           (let* ((provider (assoc provider-symbol teletext--providers))
+                  (provider-page-fn (cdr (assoc 'page provider)))
+                  (page (teletext--get-state 'page))
+                  (subpage (teletext--get-state 'subpage)))
+             (teletext--merge-state
+              (funcall provider-page-fn network page subpage force))
+             (teletext--linkify-buffer)
+             (teletext--update-header-line))))))))
 
 (defun teletext--revert (&optional _ignore-auto _noconfirm)
   "Internal helper to refresh a teletext page."
@@ -312,6 +337,21 @@ When called from Lisp, CHAR is a character between ?0 and ?9."
     (teletext--set-state 'input (truncate (or input 0) 10))
     (teletext--input-changed)))
 
+(defun teletext-mouse-follow-link (event)
+  "Go to the teletext page number or network name at point.
+
+EVENT is a mouse event."
+  (interactive "e")
+  (let ((window (posn-window (event-end event))))
+    (when (windowp window)
+      (select-window window)
+      (let ((pos (posn-point (event-end event))))
+        (let ((page (get-text-property pos 'teletext--page)))
+          (if page (teletext-goto-page page)
+            (let ((network (get-text-property pos 'teletext--network)))
+              (if network (teletext-select-network network)
+                (error "No teletext page number here")))))))))
+
 (defun teletext-duplicate-buffer ()
   "Make a copy of the current teletext buffer and activate it.
 
@@ -341,6 +381,8 @@ number of teletext buffers can be open at once."
     (define-key map [deletechar] 'teletext-input-backspace)
     (define-key map [down] 'teletext-previous-page)
     (define-key map [left] 'teletext-previous-subpage)
+    (define-key map [mouse-1] 'teletext-mouse-follow-link)
+    (define-key map [mouse-2] 'teletext-mouse-follow-link)
     (define-key map [right] 'teletext-next-subpage)
     (define-key map [up] 'teletext-next-page)
     (define-key map [wheel-down] 'teletext-previous-page)
