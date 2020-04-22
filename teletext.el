@@ -93,7 +93,7 @@ COUNT is negative or zero, nothing is inserted."
     (goto-char (point-min))
     (goto-char (point-at-eol))
     (while (re-search-forward
-            "\\(\\<[1-8][0-9][0-9]\\>\\)\\(?:[ -)]\\|$\\)" nil t)
+            "\\(\\<[1-8][0-9][0-9]\\>\\)\\(?:[ )-]\\|$\\)" nil t)
       (let ((page (string-to-number (match-string 1))))
         (add-text-properties
          (match-beginning 1)
@@ -359,7 +359,7 @@ When called from Lisp, CHAR is a character between ?0 and ?9."
   (let ((window (posn-window (event-end event))))
     (when (windowp window)
       (select-window window)
-      (teletext-next-page))))
+      (teletext-previous-page))))
 
 (defun teletext-mouse-follow-link (event)
   "Go to the teletext page number or network name at point.
