@@ -162,7 +162,7 @@ COUNT is negative or zero, nothing is inserted."
            (right-justified-part
             (if blank-input-p
                 (teletext--format-time (current-time))
-                (or (teletext--get-state 'network-page-text) "Page:")))
+              (or (teletext--get-state 'network-page-text) "Page:")))
            (tail (if blank-input-p "" (format " %d" input)))
            (tail-max-length (if blank-input-p 0 4))
            (gap-length (max 1 (- 40 tail-max-length
