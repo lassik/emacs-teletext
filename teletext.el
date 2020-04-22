@@ -185,7 +185,14 @@ COUNT is negative or zero, nothing is inserted."
                                  (length right-justified-part))))
            (gap (make-string gap-length ? ))
            (line (concat left-justified-part gap right-justified-part tail)))
-      (insert line))))
+      (insert line)
+      (unless (equal 100 (teletext--get-state 'page))
+        (add-text-properties
+         (+ (point-at-bol) 2)
+         (+ (point-at-bol) 2 3)
+         (list 'mouse-face 'highlight
+               'help-echo "mouse-1: go to page 100"
+               'teletext--page 100))))))
 
 (defun teletext--update-header-line-only ()
   "Internal helper to refresh a teletext page."
