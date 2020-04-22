@@ -345,6 +345,22 @@ When called from Lisp, CHAR is a character between ?0 and ?9."
     (teletext--set-state 'input (truncate (or input 0) 10))
     (teletext--input-changed)))
 
+(defun teletext-mouse-next-page (event)
+  "Change the teletext display to the next page from a mouse EVENT."
+  (interactive "e")
+  (let ((window (posn-window (event-end event))))
+    (when (windowp window)
+      (select-window window)
+      (teletext-next-page))))
+
+(defun teletext-mouse-previous-page (event)
+  "Change the teletext display to the previous page from a mouse EVENT."
+  (interactive "e")
+  (let ((window (posn-window (event-end event))))
+    (when (windowp window)
+      (select-window window)
+      (teletext-next-page))))
+
 (defun teletext-mouse-follow-link (event)
   "Go to the teletext page number or network name at point.
 
@@ -392,8 +408,8 @@ number of teletext buffers can be open at once."
     (define-key map [mouse-2] 'teletext-mouse-follow-link)
     (define-key map [right] 'teletext-next-subpage)
     (define-key map [up] 'teletext-next-page)
-    (define-key map [wheel-down] 'teletext-previous-page)
-    (define-key map [wheel-up] 'teletext-next-page)
+    (define-key map [wheel-down] 'teletext-mouse-previous-page)
+    (define-key map [wheel-up] 'teletext-mouse-next-page)
     (dotimes (i 10)
       (define-key map (kbd (format "%d" i)) 'teletext-input-digit))
     map)
