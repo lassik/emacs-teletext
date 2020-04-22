@@ -92,7 +92,8 @@ COUNT is negative or zero, nothing is inserted."
   (let ((inhibit-read-only t))
     (goto-char (point-min))
     (goto-char (point-at-eol))
-    (while (re-search-forward "\\(\\<[1-8][0-9][0-9]\\>\\)[ -]" nil t)
+    (while (re-search-forward
+            "\\(\\<[1-8][0-9][0-9]\\>\\)\\(?:[ -]\\|$\\)" nil t)
       (let ((page (string-to-number (match-string 1))))
         (add-text-properties
          (match-beginning 1)
