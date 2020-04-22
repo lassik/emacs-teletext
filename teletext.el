@@ -202,13 +202,13 @@ COUNT is negative or zero, nothing is inserted."
                   (networks (funcall provider-networks-fn)))
              (dolist (network networks)
                (let ((start (point)))
-                 (insert (format "%s\n" network))
-                 (let ((end (point)))
-                   (add-text-properties
-                    start end
-                    (list 'mouse-face 'highlight
-                          'help-echo "mouse-1: select teletext network"
-                          'teletext--network network))))))))))
+                 (insert (format "%s" network))
+                 (add-text-properties
+                  start (point)
+                  (list 'mouse-face 'highlight
+                        'help-echo "mouse-1: select teletext network"
+                        'teletext--network network))
+                 (insert "\n"))))))))
 
 (defun teletext--update (&optional force)
   "Internal helper to refresh a teletext page.
