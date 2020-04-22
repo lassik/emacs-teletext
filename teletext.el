@@ -349,8 +349,7 @@ EVENT is a mouse event."
         (let ((page (get-text-property pos 'teletext--page)))
           (if page (teletext-goto-page page)
             (let ((network (get-text-property pos 'teletext--network)))
-              (if network (teletext-select-network network)
-                (error "No teletext page number here")))))))))
+              (when network (teletext-select-network network)))))))))
 
 (defun teletext-duplicate-buffer ()
   "Make a copy of the current teletext buffer and activate it.
