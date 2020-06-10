@@ -87,7 +87,7 @@ COUNT is negative or zero, nothing is inserted."
       (insert (make-string count ? ))
       (teletext-put-color background nil start (point)))))
 
-(defun teletext--linkify-buffer ()
+(defun teletext--linkify-buffer (current-page)
   "Internal helper to turn page numbers into clickable links."
   (let ((inhibit-read-only t))
     (goto-char (point-min))
@@ -95,12 +95,13 @@ COUNT is negative or zero, nothing is inserted."
     (while (re-search-forward
             "\\(\\<[1-8][0-9][0-9]\\>\\)\\(?:[ )-]\\|$\\)" nil t)
       (let ((page (string-to-number (match-string 1))))
-        (add-text-properties
-         (match-beginning 1)
-         (match-end 1)
-         (list 'mouse-face 'highlight
-               'help-echo "mouse-1: go to teletext page"
-               'teletext--page page))))))
+        (unless (= page current-page)
+          (add-text-properties
+           (match-beginning 1)
+           (match-end 1)
+           (list 'mouse-face 'highlight
+                 'help-echo "mouse-1: go to teletext page"
+                 'teletext--page page)))))))
 
 (defun teletext--clamp-page (page)
   "Internal helper to ensure PAGE is between 100..899."
@@ -240,7 +241,7 @@ the page is up to date."
                   (subpage (teletext--get-state 'subpage)))
              (teletext--merge-state
               (funcall provider-page-fn network page subpage force))
-             (teletext--linkify-buffer)
+             (teletext--linkify-buffer page)
              (teletext--update-header-line))))))))
 
 (defun teletext--revert (&optional _ignore-auto _noconfirm)
