@@ -442,6 +442,7 @@ Pages may be cached for faster browsing.  Press \\[revert-buffer] to refresh
 the current page with the latest version.
 
 \\{teletext-mode-map}"
+  (setq default-directory (expand-file-name "~"))
   (setq-local revert-buffer-function 'teletext--revert)
   (teletext--update))
 
