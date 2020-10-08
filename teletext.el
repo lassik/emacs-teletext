@@ -110,8 +110,8 @@ number CURRENT-PAGE is not linkified."
 (defun teletext--clamp-page (page)
   "Internal helper to ensure PAGE is between 100..899."
   (cond ((not (integerp page)) 100)
-        ((< page 100) 100)
-        ((> page 899) 899)
+        ((< page 100) 899)
+        ((> page 899) 100)
         (t page)))
 
 (defun teletext--clamp-subpage (subpage count)
