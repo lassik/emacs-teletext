@@ -88,7 +88,10 @@ COUNT is negative or zero, nothing is inserted."
       (teletext-put-color background nil start (point)))))
 
 (defun teletext--linkify-buffer (current-page)
-  "Internal helper to turn page numbers into clickable links."
+  "Internal helper to turn page numbers into clickable links.
+
+To avoid confusing self-links that do nothing when clicked, the
+number CURRENT-PAGE is not linkified."
   (let ((inhibit-read-only t))
     (goto-char (point-min))
     (goto-char (point-at-eol))
@@ -446,7 +449,20 @@ the current page with the latest version.
   (teletext--update))
 
 (cl-defun teletext-provide (symbol &key networks page)
-  "Helper for programmers who make new teletext providers."
+  "Helper for programmers who make new teletext providers.
+
+A teletext provider is registered under SYMBOL; if such a
+provider already exists, it is modified.
+
+NETWORKS is a function that returns the list of provided
+television network names as strings.
+
+PAGE is a function taking arguments (NETWORK PAGE SUBPAGE FORCE)
+that retrieves the given SUBPAGE of the given teletext PAGE on
+the NETWORK and inserts the human-readable contents into the
+current buffer. The provider may keep a page cache; if FORCE is
+non-nil, the page is refreshed live from the network even if
+there's a copy in cache."
   (cl-assert (functionp networks))
   (cl-assert (functionp page))
   (let ((apair (or (assoc symbol teletext--providers)
