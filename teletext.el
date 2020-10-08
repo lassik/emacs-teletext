@@ -27,10 +27,11 @@
   "List of Emacs packages providing teletext service.
 
 The package `teletext' does not actually provide a teletext
-broadcast.  Broadcasts are provided by third-party packages.
+broadcast. Broadcasts are provided by third-party packages which
+need to be installed separately.
 
-Each such package calls `teletext-provide' internally to register
-itself with the `teletext' package.")
+Each such package internally calls `teletext-provide' to register
+itself with the main `teletext' package.")
 
 (defvar-local teletext--state nil
   "Internal variable remembering where you're at in a teletext buffer.")
