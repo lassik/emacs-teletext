@@ -4,7 +4,7 @@
 ;; Author: Lassi Kortela <lassi@lassi.io>
 ;; URL: https://github.com/lassik/emacs-teletext
 ;; Package-Requires: ((emacs "24.3"))
-;; Package-Version: 0.1.0
+;; Version: 0.1.0
 ;; Keywords: comm help hypermedia
 ;;
 ;; This file is not part of GNU Emacs.
