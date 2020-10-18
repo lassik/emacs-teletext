@@ -270,6 +270,8 @@ name of the network."
    (list (let ((networks (teletext--network-list)))
            (completing-read "Teletext network: " networks
                             nil t nil nil (car networks)))))
+  (unless (and network (not (equal "" network)))
+    (error "No teletext network given"))
   (cl-dolist (provider teletext--providers
                        (error "No such teletext network: %S" network))
     (let* ((provider-symbol (car provider))
