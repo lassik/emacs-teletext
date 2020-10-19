@@ -23,6 +23,8 @@
 ;; shares no code or functionality with vtx.el but I have kept the
 ;; same key bindings.
 
+(require 'cl-lib)
+
 (defvar teletext--providers '()
   "List of Emacs packages providing teletext service.
 
