@@ -38,12 +38,6 @@ itself with the main `teletext' package.")
 (defvar-local teletext--state nil
   "Internal variable remembering where you're at in a teletext buffer.")
 
-(defun teletext--deep-copy-list (list)
-  "Internal helper to copy LIST and all its sublists."
-  (if (atom list) list
-    (cons (teletext--deep-copy-list (car list))
-          (teletext--deep-copy-list (cdr list)))))
-
 (defun teletext--get-face (background foreground)
   "Internal helper to get a face for the given color combination.
 
@@ -396,7 +390,7 @@ number of teletext buffers can be open at once."
   (let ((old-state teletext--state))
     (switch-to-buffer-other-window (generate-new-buffer-name "*Teletext*"))
     (teletext-mode)
-    (setq-local teletext--state (teletext--deep-copy-list old-state))
+    (setq-local teletext--state (copy-tree old-state))
     (teletext--update)))
 
 (defvar teletext-mode-map
