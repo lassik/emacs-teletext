@@ -93,7 +93,7 @@ number CURRENT-PAGE is not linkified."
     (goto-char (point-min))
     (goto-char (point-at-eol))
     (while (re-search-forward
-            "\\(\\<[1-8][0-9][0-9]\\>\\)\\(?:[ )>!;,.-]\\|$\\)" nil t)
+            "\\(\\<[1-8][0-9][0-9]\\>\\)\\(?:[ )>/!;,.-]\\|$\\)" nil t)
       (let ((page (string-to-number (match-string 1))))
         (unless (= page current-page)
           (add-text-properties
