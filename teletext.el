@@ -1,21 +1,21 @@
 ;;; teletext.el --- Teletext broadcast viewer -*- lexical-binding: t -*-
-;;
+
 ;; SPDX-License-Identifier: ISC
 ;; Author: Lassi Kortela <lassi@lassi.io>
 ;; URL: https://github.com/lassik/emacs-teletext
 ;; Package-Requires: ((emacs "24.3"))
 ;; Version: 0.1.0
 ;; Keywords: comm help hypermedia
-;;
+
 ;; This file is not part of GNU Emacs.
-;;
+
 ;;; Commentary:
-;;
+
 ;; Browse teletext pages in Emacs.
-;;
+
 ;; You need to install one or more teletext providers in addition to
 ;; this package.  Look for package names of the form `teletext-*'.
-;;
+
 ;;; Code:
 
 ;; History: There was an earlier videotext package for Emacs, vtx.el
